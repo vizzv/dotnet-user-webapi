@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using UserCrudApi.Data;
 using UserCrudApi.Services;
+using Npgsql;
 
 var builder = WebApplication.CreateBuilder(args);
 
