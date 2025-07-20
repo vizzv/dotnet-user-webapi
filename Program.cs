@@ -9,7 +9,6 @@ var host = Environment.GetEnvironmentVariable("PG_HOST");
 var database = Environment.GetEnvironmentVariable("PG_DATABASE");
 var user = Environment.GetEnvironmentVariable("PG_USER");
 var password = Environment.GetEnvironmentVariable("PG_PASSWORD");
-var sslMode = Environment.GetEnvironmentVariable("PG_SSLMODE") ?? "Prefer";
 
 var pgStringBuilder = new NpgsqlConnectionStringBuilder
 {
@@ -17,15 +16,13 @@ var pgStringBuilder = new NpgsqlConnectionStringBuilder
     Database = database,
     Username = user,
     Password = password,
-    SslMode = Enum.Parse<SslMode>(sslMode, true),
-    TrustServerCertificate = true
 };
 
 string pgConnectionString = pgStringBuilder.ConnectionString;
 
 // Add services to the container.
 builder.Services.AddDbContext<UserContext>(options =>
-    options.UseNpgsql(pgStringBuilder));
+    options.UseNpgsql(pgConnectionString));
 
 builder.Services.AddScoped<MigrationService>();
 builder.Services.AddControllers();
