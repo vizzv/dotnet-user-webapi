@@ -60,7 +60,7 @@ using (var scope = app.Services.CreateScope())
     }
 }
 
-if(Environment.GetEnvironmentVariable("IS_DEVELOPMENT"))
+if(Environment.GetEnvironmentVariable("IS_DEVELOPMENT")== "true")
 {
     app.UseSwagger();
     app.UseSwaggerUI();
