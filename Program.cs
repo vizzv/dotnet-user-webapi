@@ -4,9 +4,27 @@ using UserCrudApi.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
+var host = Environment.GetEnvironmentVariable("PG_HOST");
+var database = Environment.GetEnvironmentVariable("PG_DATABASE");
+var user = Environment.GetEnvironmentVariable("PG_USER");
+var password = Environment.GetEnvironmentVariable("PG_PASSWORD");
+var sslMode = Environment.GetEnvironmentVariable("PG_SSLMODE") ?? "Prefer";
+
+var pgStringBuilder = new NpgsqlConnectionStringBuilder
+{
+    Host = host,
+    Database = database,
+    Username = user,
+    Password = password,
+    SslMode = Enum.Parse<SslMode>(sslMode, true),
+    TrustServerCertificate = true
+};
+
+string pgConnectionString = pgStringBuilder.ConnectionString;
+
 // Add services to the container.
 builder.Services.AddDbContext<UserContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseNpgsql(pgStringBuilder));
 
 builder.Services.AddScoped<MigrationService>();
 builder.Services.AddControllers();
@@ -44,13 +62,13 @@ using (var scope = app.Services.CreateScope())
     }
 }
 
-// Configure the HTTP request pipeline.
-
+if(Environment.GetEnvironmentVariable("IS_DEVELOPMENT"))
+{
     app.UseSwagger();
     app.UseSwaggerUI();
     app.UseCors("AllowAll");
 
-
+}
 app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();
